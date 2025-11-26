@@ -23,15 +23,14 @@ jobs:
           npm install -g eas-cli
           npm ci
 
-      - name: Log in to Expo
-        run: eas login --token ${{ secrets.EAS_TOKEN }}
+      - name: Log in to Expo using token
+        run: eas login --token ${{ secrets.EXPO_TOKEN }}
 
       - name: Configure EAS for development build
         run: eas build:configure
 
       - name: Build iOS Development IPA
-        run: |
-          eas build -p ios --profile development --non-interactive --clear-cache
+        run: eas build -p ios --profile development --non-interactive --clear-cache
 
       - name: Get latest finished iOS build
         id: get_build
