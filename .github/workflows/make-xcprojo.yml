@@ -1,0 +1,36 @@
+name: Prebuild iOS Project
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  prebuild-ios:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: |
+          npm install -g eas-cli
+          npm ci
+
+      - name: Log in to Expo using token
+        run: eas login --token ${{ secrets.EXPO_TOKEN }}
+
+      - name: Prebuild iOS project
+        run: npx expo prebuild --platform ios --clean
+
+      - name: Upload iOS folder as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-project
+          path: ios/
