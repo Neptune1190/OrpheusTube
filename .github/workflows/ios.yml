@@ -13,8 +13,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: npm install -g expo-cli
-      - run: npx expo prebuild --platform ios --skip-install
+      - run: npm install -g expo
+      - run: npx expo prebuild --platform ios
       - run: ls ios
       - uses: actions/upload-artifact@v4
         with:
