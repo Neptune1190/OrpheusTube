@@ -10,7 +10,7 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Set up Node.js
@@ -23,17 +23,18 @@ jobs:
           npm install -g eas-cli
           npm ci
 
-      - name: Log in to Expo using token
-        run: eas login --token ${{ secrets.EXPO_TOKEN }}
-
-      - name: Configure EAS for development build
+      - name: Configure EAS
         run: eas build:configure
 
       - name: Build iOS Development IPA
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: eas build -p ios --profile development --non-interactive --clear-cache
 
       - name: Get latest finished iOS build
         id: get_build
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
           BUILD_URL=$(eas build:list --platform ios --status finished --limit 1 --json | jq -r '.[0].artifacts.url')
           echo "IPA URL: $BUILD_URL"
