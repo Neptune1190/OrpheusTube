@@ -6,13 +6,15 @@ on:
 jobs:
   prebuild-ios:
     runs-on: ubuntu-latest
+    env:
+      EAS_TOKEN: ${{ secrets.EXPO_TOKEN }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
       - run: npm install -g eas-cli
-      - run: eas login --token ${{ secrets.EXPO_TOKEN }}
+      - run: eas whoami
       - run: eas prebuild --platform ios --skip-install
       - run: ls ios
       - uses: actions/upload-artifact@v4
