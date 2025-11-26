@@ -14,7 +14,6 @@ jobs:
         with:
           node-version: '20'
       - run: npm install -g eas-cli
-      - run: eas whoami
       - run: eas prebuild --platform ios --skip-install
       - run: ls ios
       - uses: actions/upload-artifact@v4
