@@ -1,10 +1,20 @@
+name: Build Unsigned iOS App
+
+on:
+  workflow_dispatch:
+
 jobs:
   build-ios:
     runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v3
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}
 
-      - name: Install Node.js
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -36,8 +46,15 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             -derivedDataPath build
 
-      - name: Upload Unsigned .app
+      - name: Create Unsigned IPA
+        run: |
+          mkdir -p ios/build/unsigned-ipa
+          xcrun -sdk iphoneos PackageApplication \
+            -v build/Build/Products/Debug-iphoneos/vibecode.app \
+            -o ios/build/unsigned-ipa/vibecode.ipa || true
+
+      - name: Upload Unsigned IPA
         uses: actions/upload-artifact@v4
         with:
-          name: ios-unsigned-app
-          path: build/Build/Products/Debug-iphoneos/vibecode.app
+          name: vibecode-ios-unsigned
+          path: ios/build/unsigned-ipa/vibecode.ipa
