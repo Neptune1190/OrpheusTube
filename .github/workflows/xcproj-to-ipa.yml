@@ -1,8 +1,3 @@
-name: Build Unsigned iOS App
-
-on:
-  workflow_dispatch:
-
 jobs:
   build-ios:
     runs-on: macos-latest
@@ -16,6 +11,15 @@ jobs:
 
       - name: Install JS dependencies
         run: npm install
+
+      - name: Bundle React Native JS
+        run: |
+          npx react-native bundle \
+            --entry-file index.js \
+            --platform ios \
+            --dev false \
+            --bundle-output ios/main.jsbundle \
+            --assets-dest ios
 
       - name: Install CocoaPods
         run: |
@@ -31,9 +35,6 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
             -derivedDataPath build
-
-      - name: List Build Output
-        run: ls build/Build/Products/Debug-iphoneos
 
       - name: Upload Unsigned .app
         uses: actions/upload-artifact@v4
