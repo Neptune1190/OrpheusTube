@@ -1,0 +1,47 @@
+name: Build iOS Dev IPA
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  ios-dev-build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: |
+          npm install -g eas-cli
+          npm ci
+
+      - name: Log in to Expo
+        run: eas login --token ${{ secrets.EAS_TOKEN }}
+
+      - name: Configure EAS for development build
+        run: eas build:configure
+
+      - name: Build iOS Development IPA
+        run: |
+          eas build -p ios --profile development --non-interactive --clear-cache
+
+      - name: Get latest finished iOS build
+        id: get_build
+        run: |
+          BUILD_URL=$(eas build:list --platform ios --status finished --limit 1 --json | jq -r '.[0].artifacts.url')
+          echo "IPA URL: $BUILD_URL"
+          echo "ipa_url=$BUILD_URL" >> $GITHUB_OUTPUT
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ios-dev-ipa
+          path: ./ios-dev.ipa
