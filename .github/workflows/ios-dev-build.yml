@@ -23,9 +23,6 @@ jobs:
           npm install -g eas-cli
           npm ci
 
-      - name: Configure EAS
-        run: eas build:configure
-
       - name: Build iOS Development IPA
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
